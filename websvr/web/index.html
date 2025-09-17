@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetOps Control Center - Network Operations Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-network-wired"></i>
+            <span>NetOps Center</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#devices" class="nav-item" data-page="devices">
+                <i class="fas fa-server"></i>
+                <span>Device Management</span>
+            </a>
+            <a href="#monitoring" class="nav-item" data-page="monitoring">
+                <i class="fas fa-chart-line"></i>
+                <span>Network Monitoring</span>
+            </a>
+            <a href="#incidents" class="nav-item" data-page="incidents">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Incidents</span>
+            </a>
+            <a href="#topology" class="nav-item" data-page="topology">
+                <i class="fas fa-project-diagram"></i>
+                <span>Network Topology</span>
+            </a>
+            <a href="#performance" class="nav-item" data-page="performance">
+                <i class="fas fa-chart-area"></i>
+                <span>Performance</span>
+            </a>
+            <a href="#configuration" class="nav-item" data-page="configuration">
+                <i class="fas fa-cog"></i>
+                <span>Configuration</span>
+            </a>
+            <a href="#reports" class="nav-item" data-page="reports">
+                <i class="fas fa-file-alt"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header class="top-bar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-info">
+                <h1>Network Operations Control Center</h1>
+            </div>
+            <div class="header-actions">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">3</span>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page-header">
+                    <h2>Network Dashboard</h2>
+                    <div class="refresh-btn">
+                        <button onclick="refreshDashboard()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Active Devices</h3>
+                            <p class="stat-number">247</p>
+                            <span class="stat-change positive">+12 from yesterday</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-wifi"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Network Uptime</h3>
+                            <p class="stat-number">99.98%</p>
+                            <span class="stat-change">Last 30 days</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Active Alerts</h3>
+                            <p class="stat-number">8</p>
+                            <span class="stat-change negative">3 critical</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3>Avg. Latency</h3>
+                            <p class="stat-number">12ms</p>
+                            <span class="stat-change positive">-2ms improvement</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Network Traffic</h3>
+                            <select class="time-range">
+                                <option>Last Hour</option>
+                                <option>Last 24 Hours</option>
+                                <option>Last Week</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Device Status Overview</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="device-status-grid">
+                                <div class="status-item">
+                                    <span class="status-label">Routers</span>
+                                    <div class="status-bar">
+                                        <div class="status-fill green" style="width: 92%"></div>
+                                    </div>
+                                    <span class="status-value">92% Online</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Switches</span>
+                                    <div class="status-bar">
+                                        <div class="status-fill green" style="width: 98%"></div>
+                                    </div>
+                                    <span class="status-value">98% Online</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Firewalls</span>
+                                    <div class="status-bar">
+                                        <div class="status-fill green" style="width: 100%"></div>
+                                    </div>
+                                    <span class="status-value">100% Online</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">Access Points</span>
+                                    <div class="status-bar">
+                                        <div class="status-fill yellow" style="width: 87%"></div>
+                                    </div>
+                                    <span class="status-value">87% Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Incidents</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="incident-list">
+                                <div class="incident-item critical">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <div class="incident-details">
+                                        <h4>Core Switch SW-001 Down</h4>
+                                        <p>Connection lost to core switch in datacenter A</p>
+                                        <span class="incident-time">5 minutes ago</span>
+                                    </div>
+                                </div>
+                                <div class="incident-item warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div class="incident-details">
+                                        <h4>High CPU Usage on Router R-042</h4>
+                                        <p>CPU utilization exceeds 85% threshold</p>
+                                        <span class="incident-time">12 minutes ago</span>
+                                    </div>
+                                </div>
+                                <div class="incident-item info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <div class="incident-details">
+                                        <h4>Scheduled Maintenance Complete</h4>
+                                        <p>Firmware update on access points completed</p>
+                                        <span class="incident-time">1 hour ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Bandwidth Utilization</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="bandwidthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Device Management Page -->
+            <div id="devices" class="page">
+                <div class="page-header">
+                    <h2>Device Management</h2>
+                    <button class="btn-primary" onclick="addDevice()">
+                        <i class="fas fa-plus"></i> Add Device
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <input type="text" placeholder="Search devices..." class="search-input" id="deviceSearch">
+                    <select class="filter-select">
+                        <option>All Types</option>
+                        <option>Routers</option>
+                        <option>Switches</option>
+                        <option>Firewalls</option>
+                        <option>Access Points</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Online</option>
+                        <option>Offline</option>
+                        <option>Maintenance</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Device ID</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>IP Address</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Uptime</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody">
+                            <tr>
+                                <td>SW-001</td>
+                                <td>Core Switch A</td>
+                                <td><span class="device-type">Switch</span></td>
+                                <td>192.168.1.10</td>
+                                <td>Datacenter A</td>
+                                <td><span class="status-badge online">Online</span></td>
+                                <td>45d 12h</td>
+                                <td>
+                                    <button class="btn-icon" title="Configure"><i class="fas fa-cog"></i></button>
+                                    <button class="btn-icon" title="Monitor"><i class="fas fa-chart-line"></i></button>
+                                    <button class="btn-icon" title="Reboot"><i class="fas fa-redo"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>RT-042</td>
+                                <td>Edge Router 42</td>
+                                <td><span class="device-type">Router</span></td>
+                                <td>192.168.2.1</td>
+                                <td>Building B</td>
+                                <td><span class="status-badge warning">High Load</span></td>
+                                <td>12d 8h</td>
+                                <td>
+                                    <button class="btn-icon" title="Configure"><i class="fas fa-cog"></i></button>
+                                    <button class="btn-icon" title="Monitor"><i class="fas fa-chart-line"></i></button>
+                                    <button class="btn-icon" title="Reboot"><i class="fas fa-redo"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>FW-003</td>
+                                <td>Main Firewall</td>
+                                <td><span class="device-type">Firewall</span></td>
+                                <td>192.168.0.1</td>
+                                <td>Datacenter A</td>
+                                <td><span class="status-badge online">Online</span></td>
+                                <td>120d 5h</td>
+                                <td>
+                                    <button class="btn-icon" title="Configure"><i class="fas fa-cog"></i></button>
+                                    <button class="btn-icon" title="Monitor"><i class="fas fa-chart-line"></i></button>
+                                    <button class="btn-icon" title="Reboot"><i class="fas fa-redo"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Network Monitoring Page -->
+            <div id="monitoring" class="page">
+                <div class="page-header">
+                    <h2>Network Monitoring</h2>
+                </div>
+                <div class="monitoring-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Real-time Metrics</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="metric-row">
+                                <span>Total Bandwidth</span>
+                                <span class="metric-value">8.4 Gbps</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Active Connections</span>
+                                <span class="metric-value">12,847</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Packet Loss</span>
+                                <span class="metric-value">0.02%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span>Average Response Time</span>
+                                <span class="metric-value">14ms</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Service Health</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="service-health">
+                                <div class="health-item">
+                                    <i class="fas fa-check-circle green"></i>
+                                    <span>DNS Service</span>
+                                </div>
+                                <div class="health-item">
+                                    <i class="fas fa-check-circle green"></i>
+                                    <span>DHCP Service</span>
+                                </div>
+                                <div class="health-item">
+                                    <i class="fas fa-exclamation-circle orange"></i>
+                                    <span>VPN Gateway</span>
+                                </div>
+                                <div class="health-item">
+                                    <i class="fas fa-check-circle green"></i>
+                                    <span>Load Balancer</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incidents Page -->
+            <div id="incidents" class="page">
+                <div class="page-header">
+                    <h2>Incident Management</h2>
+                    <button class="btn-primary">
+                        <i class="fas fa-plus"></i> Report Incident
+                    </button>
+                </div>
+                <div class="incidents-container">
+                    <div class="incident-filters">
+                        <button class="filter-btn active">All (15)</button>
+                        <button class="filter-btn">Critical (3)</button>
+                        <button class="filter-btn">Warning (7)</button>
+                        <button class="filter-btn">Info (5)</button>
+                    </div>
+                    <div class="incident-cards">
+                        <div class="incident-card critical">
+                            <div class="incident-header">
+                                <span class="incident-id">INC-2024-001</span>
+                                <span class="incident-priority">CRITICAL</span>
+                            </div>
+                            <h3>Core Network Outage</h3>
+                            <p>Multiple core switches experiencing connectivity issues</p>
+                            <div class="incident-meta">
+                                <span><i class="fas fa-clock"></i> 15 min ago</span>
+                                <span><i class="fas fa-user"></i> John Smith</span>
+                                <span class="incident-status">In Progress</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Network Topology Page -->
+            <div id="topology" class="page">
+                <div class="page-header">
+                    <h2>Network Topology</h2>
+                    <div class="topology-controls">
+                        <button onclick="zoomIn()"><i class="fas fa-search-plus"></i></button>
+                        <button onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
+                        <button onclick="resetView()"><i class="fas fa-expand"></i></button>
+                    </div>
+                </div>
+                <div class="topology-container">
+                    <canvas id="topologyCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Page -->
+            <div id="performance" class="page">
+                <div class="page-header">
+                    <h2>Performance Analytics</h2>
+                </div>
+                <div class="performance-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Latency Heatmap</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="latencyHeatmap"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Top Talkers</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="top-talkers">
+                                <div class="talker-item">
+                                    <span>192.168.1.105</span>
+                                    <div class="talker-bar">
+                                        <div class="talker-fill" style="width: 85%"></div>
+                                    </div>
+                                    <span>2.3 GB</span>
+                                </div>
+                                <div class="talker-item">
+                                    <span>192.168.2.220</span>
+                                    <div class="talker-bar">
+                                        <div class="talker-fill" style="width: 72%"></div>
+                                    </div>
+                                    <span>1.9 GB</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Page -->
+            <div id="configuration" class="page">
+                <div class="page-header">
+                    <h2>Configuration Management</h2>
+                </div>
+                <div class="config-container">
+                    <div class="config-sidebar">
+                        <h3>Configuration Templates</h3>
+                        <ul class="config-list">
+                            <li>Router Base Config</li>
+                            <li>Switch VLAN Setup</li>
+                            <li>Firewall Rules</li>
+                            <li>QoS Policy</li>
+                        </ul>
+                    </div>
+                    <div class="config-editor">
+                        <div class="editor-header">
+                            <h3>Configuration Editor</h3>
+                            <button class="btn-save">Save Configuration</button>
+                        </div>
+                        <textarea class="config-textarea" placeholder="Paste or edit configuration here..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports" class="page">
+                <div class="page-header">
+                    <h2>Reports & Analytics</h2>
+                    <button class="btn-primary">
+                        <i class="fas fa-download"></i> Generate Report
+                    </button>
+                </div>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <i class="fas fa-file-pdf"></i>
+                        <h3>Monthly Network Summary</h3>
+                        <p>Generated: Dec 1, 2024</p>
+                        <button class="btn-download">Download</button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Device Inventory</h3>
+                        <p>Generated: Nov 28, 2024</p>
+                        <button class="btn-download">Download</button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Incident Report</h3>
+                        <p>Generated: Nov 25, 2024</p>
+                        <button class="btn-download">Download</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Device Details Modal -->
+    <div id="deviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalDeviceName">Device Details</h2>
+                <button class="modal-close" onclick="closeDeviceModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="device-info-grid">
+                    <div class="info-section">
+                        <h3>Basic Information</h3>
+                        <div class="info-row">
+                            <span class="info-label">Device ID:</span>
+                            <span class="info-value" id="modalDeviceId">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Type:</span>
+                            <span class="info-value" id="modalDeviceType">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Model:</span>
+                            <span class="info-value" id="modalDeviceModel">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Serial Number:</span>
+                            <span class="info-value" id="modalDeviceSerial">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Firmware:</span>
+                            <span class="info-value" id="modalDeviceFirmware">-</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>Network Configuration</h3>
+                        <div class="info-row">
+                            <span class="info-label">IP Address:</span>
+                            <span class="info-value" id="modalDeviceIP">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">MAC Address:</span>
+                            <span class="info-value" id="modalDeviceMAC">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Subnet Mask:</span>
+                            <span class="info-value" id="modalDeviceSubnet">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Gateway:</span>
+                            <span class="info-value" id="modalDeviceGateway">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">VLAN:</span>
+                            <span class="info-value" id="modalDeviceVLAN">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-tabs">
+                    <div class="tab-header">
+                        <button class="tab-button active" onclick="switchTab('performance')">Performance</button>
+                        <button class="tab-button" onclick="switchTab('ports')">Ports/Interfaces</button>
+                        <button class="tab-button" onclick="switchTab('logs')">Recent Logs</button>
+                        <button class="tab-button" onclick="switchTab('config')">Configuration</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="performance-tab" class="tab-pane active">
+                            <div class="performance-metrics">
+                                <div class="metric-card">
+                                    <span class="metric-label">CPU Usage</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 45%; background: #10b981;"></div>
+                                    </div>
+                                    <span class="metric-percent">45%</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Memory Usage</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 62%; background: #f59e0b;"></div>
+                                    </div>
+                                    <span class="metric-percent">62%</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Temperature</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 35%; background: #3b82f6;"></div>
+                                    </div>
+                                    <span class="metric-percent">42°C</span>
+                                </div>
+                                <div class="metric-card">
+                                    <span class="metric-label">Bandwidth Utilization</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 78%; background: #f59e0b;"></div>
+                                    </div>
+                                    <span class="metric-percent">78%</span>
+                                </div>
+                            </div>
+                            <div style="height: 200px; margin-top: 20px;">
+                                <canvas id="devicePerformanceChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div id="ports-tab" class="tab-pane">
+                            <table class="ports-table">
+                                <thead>
+                                    <tr>
+                                        <th>Port</th>
+                                        <th>Status</th>
+                                        <th>Speed</th>
+                                        <th>VLAN</th>
+                                        <th>Connected Device</th>
+                                        <th>Traffic In/Out</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="portsTableBody">
+                                    <tr>
+                                        <td>GigE 0/1</td>
+                                        <td><span class="port-status active">Active</span></td>
+                                        <td>1 Gbps</td>
+                                        <td>10</td>
+                                        <td>SW-002</td>
+                                        <td>523 MB / 412 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>GigE 0/2</td>
+                                        <td><span class="port-status active">Active</span></td>
+                                        <td>1 Gbps</td>
+                                        <td>20</td>
+                                        <td>RT-001</td>
+                                        <td>892 MB / 756 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>GigE 0/3</td>
+                                        <td><span class="port-status inactive">Inactive</span></td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                        <td>0 MB / 0 MB</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="logs-tab" class="tab-pane">
+                            <div class="logs-container">
+                                <div class="log-entry info">
+                                    <span class="log-time">2024-12-10 14:35:22</span>
+                                    <span class="log-level">INFO</span>
+                                    <span class="log-message">Configuration backup completed successfully</span>
+                                </div>
+                                <div class="log-entry warning">
+                                    <span class="log-time">2024-12-10 14:28:15</span>
+                                    <span class="log-level">WARN</span>
+                                    <span class="log-message">CPU usage exceeded 80% threshold</span>
+                                </div>
+                                <div class="log-entry error">
+                                    <span class="log-time">2024-12-10 14:15:03</span>
+                                    <span class="log-level">ERROR</span>
+                                    <span class="log-message">Failed to establish connection to NTP server</span>
+                                </div>
+                                <div class="log-entry info">
+                                    <span class="log-time">2024-12-10 14:00:00</span>
+                                    <span class="log-level">INFO</span>
+                                    <span class="log-message">Interface GigE 0/2 state changed to UP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="config-tab" class="tab-pane">
+                            <div class="config-actions">
+                                <button class="btn-action" onclick="backupConfig()">
+                                    <i class="fas fa-download"></i> Backup Config
+                                </button>
+                                <button class="btn-action" onclick="restoreConfig()">
+                                    <i class="fas fa-upload"></i> Restore Config
+                                </button>
+                                <button class="btn-action" onclick="editConfig()">
+                                    <i class="fas fa-edit"></i> Edit Config
+                                </button>
+                            </div>
+                            <pre class="config-preview">
+hostname SW-001
+!
+interface GigabitEthernet0/1
+ description Uplink to Core
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+!
+interface GigabitEthernet0/2
+ description Connection to Router
+ switchport access vlan 10
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+vlan 10
+ name Management
+vlan 20
+ name Users
+vlan 30
+ name Servers
+!</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="openDeviceConsole()">
+                        <i class="fas fa-terminal"></i> Console
+                    </button>
+                    <button class="btn-warning" onclick="restartDevice()">
+                        <i class="fas fa-redo"></i> Restart
+                    </button>
+                    <button class="btn-danger" onclick="shutdownDevice()">
+                        <i class="fas fa-power-off"></i> Shutdown
+                    </button>
+                    <button class="btn-info" onclick="pingDevice()">
+                        <i class="fas fa-network-wired"></i> Ping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

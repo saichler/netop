@@ -1,0 +1,335 @@
+syntax = "proto3";
+
+package types;
+
+option go_package = "./types";
+
+// Enums for various status types
+enum DeviceStatus {
+  DEVICE_STATUS_UNKNOWN = 0;
+  DEVICE_STATUS_ONLINE = 1;
+  DEVICE_STATUS_OFFLINE = 2;
+  DEVICE_STATUS_MAINTENANCE = 3;
+  DEVICE_STATUS_WARNING = 4;
+}
+
+enum DeviceType {
+  DEVICE_TYPE_UNKNOWN = 0;
+  DEVICE_TYPE_SWITCH = 1;
+  DEVICE_TYPE_ROUTER = 2;
+  DEVICE_TYPE_FIREWALL = 3;
+  DEVICE_TYPE_ACCESS_POINT = 4;
+  DEVICE_TYPE_SERVER = 5;
+  DEVICE_TYPE_LOAD_BALANCER = 6;
+}
+
+enum PortStatus {
+  PORT_STATUS_UNKNOWN = 0;
+  PORT_STATUS_ACTIVE = 1;
+  PORT_STATUS_INACTIVE = 2;
+  PORT_STATUS_ERROR = 3;
+}
+
+enum IncidentPriority {
+  INCIDENT_PRIORITY_UNKNOWN = 0;
+  INCIDENT_PRIORITY_INFO = 1;
+  INCIDENT_PRIORITY_WARNING = 2;
+  INCIDENT_PRIORITY_CRITICAL = 3;
+}
+
+enum IncidentStatus {
+  INCIDENT_STATUS_UNKNOWN = 0;
+  INCIDENT_STATUS_OPEN = 1;
+  INCIDENT_STATUS_IN_PROGRESS = 2;
+  INCIDENT_STATUS_RESOLVED = 3;
+  INCIDENT_STATUS_CLOSED = 4;
+}
+
+enum LogLevel {
+  LOG_LEVEL_UNKNOWN = 0;
+  LOG_LEVEL_INFO = 1;
+  LOG_LEVEL_WARNING = 2;
+  LOG_LEVEL_ERROR = 3;
+  LOG_LEVEL_DEBUG = 4;
+}
+
+enum ServiceHealthStatus {
+  SERVICE_HEALTH_UNKNOWN = 0;
+  SERVICE_HEALTH_HEALTHY = 1;
+  SERVICE_HEALTH_DEGRADED = 2;
+  SERVICE_HEALTH_UNHEALTHY = 3;
+}
+
+// Core Device model
+message Device {
+  string id = 1;
+  string name = 2;
+  DeviceType type = 3;
+  string ip_address = 4;
+  string mac_address = 5;
+  string location = 6;
+  DeviceStatus status = 7;
+  string uptime = 8;
+  string model = 9;
+  string serial_number = 10;
+  string firmware_version = 11;
+  string subnet_mask = 12;
+  string gateway = 13;
+  string vlan = 14;
+  int64 created_at = 15;
+  int64 updated_at = 16;
+  repeated Port ports = 17;
+  PerformanceMetrics performance = 18;
+  string configuration = 19;
+}
+
+// Port/Interface model
+message Port {
+  string name = 1;
+  PortStatus status = 2;
+  string speed = 3;
+  string vlan = 4;
+  string connected_device = 5;
+  TrafficStats traffic_stats = 6;
+  int64 last_seen = 7;
+}
+
+// Traffic statistics
+message TrafficStats {
+  int64 bytes_in = 1;
+  int64 bytes_out = 2;
+  int64 packets_in = 3;
+  int64 packets_out = 4;
+  double utilization_percent = 5;
+}
+
+// Performance metrics for devices
+message PerformanceMetrics {
+  double cpu_usage_percent = 1;
+  double memory_usage_percent = 2;
+  double temperature_celsius = 3;
+  double bandwidth_utilization_percent = 4;
+  int32 active_connections = 5;
+  double packet_loss_percent = 6;
+  int32 latency_ms = 7;
+  int64 timestamp = 8;
+}
+
+// Network incident model
+message Incident {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  IncidentPriority priority = 4;
+  IncidentStatus status = 5;
+  string assigned_to = 6;
+  string affected_devices = 7;
+  int64 created_at = 8;
+  int64 updated_at = 9;
+  int64 resolved_at = 10;
+}
+
+// Log entry model
+message LogEntry {
+  string id = 1;
+  string device_id = 2;
+  LogLevel level = 3;
+  string message = 4;
+  int64 timestamp = 5;
+  string source = 6;
+  map<string, string> metadata = 7;
+}
+
+// Service health status
+message ServiceHealth {
+  string service_name = 1;
+  ServiceHealthStatus status = 2;
+  string description = 3;
+  int64 last_check = 4;
+  double response_time_ms = 5;
+}
+
+// Network statistics for dashboard
+message NetworkStats {
+  int32 active_devices = 1;
+  double network_uptime_percent = 2;
+  int32 active_alerts = 3;
+  int32 average_latency_ms = 4;
+  double total_bandwidth_gbps = 5;
+  int32 total_connections = 6;
+  double packet_loss_percent = 7;
+  int64 timestamp = 8;
+}
+
+// Device status overview for dashboard
+message DeviceStatusOverview {
+  DeviceType device_type = 1;
+  int32 total_count = 2;
+  int32 online_count = 3;
+  int32 offline_count = 4;
+  int32 maintenance_count = 5;
+  double online_percentage = 6;
+}
+
+// Traffic data point for charts
+message TrafficDataPoint {
+  int64 timestamp = 1;
+  double inbound_mbps = 2;
+  double outbound_mbps = 3;
+  string label = 4;
+}
+
+// Bandwidth utilization by protocol
+message BandwidthByProtocol {
+  string protocol = 1;
+  double percentage = 2;
+  double bytes_per_second = 3;
+}
+
+// Network topology node
+message TopologyNode {
+  string id = 1;
+  string name = 2;
+  DeviceType type = 3;
+  double x_position = 4;
+  double y_position = 5;
+  DeviceStatus status = 6;
+  repeated string connected_to = 7;
+}
+
+// Top talkers for performance analysis
+message TopTalker {
+  string ip_address = 1;
+  string hostname = 2;
+  int64 total_bytes = 3;
+  double percentage_of_total = 4;
+  string protocol = 5;
+}
+
+// Configuration template
+message ConfigurationTemplate {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  DeviceType device_type = 4;
+  string template_content = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+  string created_by = 8;
+}
+
+// Report metadata
+message Report {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string type = 4; // PDF, Excel, etc.
+  string file_path = 5;
+  int64 file_size_bytes = 6;
+  int64 generated_at = 7;
+  string generated_by = 8;
+  map<string, string> parameters = 9;
+}
+
+// User/Authentication model
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string display_name = 4;
+  repeated string roles = 5;
+  int64 last_login = 6;
+  int64 created_at = 7;
+  bool is_active = 8;
+}
+
+// Notification model
+message Notification {
+  string id = 1;
+  string title = 2;
+  string message = 3;
+  IncidentPriority priority = 4;
+  string user_id = 5;
+  bool is_read = 6;
+  int64 created_at = 7;
+  int64 read_at = 8;
+}
+
+// API Response wrapper messages
+message DeviceList {
+  repeated Device devices = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+  repeated Device list = 5;
+}
+
+message IncidentList {
+  repeated Incident incidents = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message LogEntryList {
+  repeated LogEntry entries = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message ServiceHealthList {
+  repeated ServiceHealth services = 1;
+  int64 last_updated = 2;
+}
+
+message DashboardData {
+  NetworkStats network_stats = 1;
+  repeated DeviceStatusOverview device_overview = 2;
+  repeated TrafficDataPoint traffic_data = 3;
+  repeated BandwidthByProtocol bandwidth_by_protocol = 4;
+  repeated Incident recent_incidents = 5;
+  ServiceHealthList service_health = 6;
+  int64 last_updated = 7;
+}
+
+// Real-time monitoring data
+message MonitoringData {
+  string device_id = 1;
+  PerformanceMetrics performance = 2;
+  repeated Port ports = 3;
+  repeated LogEntry recent_logs = 4;
+  int64 timestamp = 5;
+}
+
+// Network topology
+message NetworkTopology {
+  repeated TopologyNode nodes = 1;
+  repeated TopologyConnection connections = 2;
+  int64 last_updated = 3;
+}
+
+message TopologyConnection {
+  string from_node_id = 1;
+  string to_node_id = 2;
+  string connection_type = 3;
+  double bandwidth_mbps = 4;
+  double utilization_percent = 5;
+}
+
+// Performance analytics
+message PerformanceAnalytics {
+  repeated TopTalker top_talkers = 1;
+  repeated LatencyData latency_data = 2;
+  repeated TrafficDataPoint historical_traffic = 3;
+  int64 time_range_start = 4;
+  int64 time_range_end = 5;
+}
+
+message LatencyData {
+  string location = 1;
+  double average_latency_ms = 2;
+  double min_latency_ms = 3;
+  double max_latency_ms = 4;
+  int64 timestamp = 5;
+}
