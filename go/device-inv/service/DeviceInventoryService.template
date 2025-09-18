@@ -1,0 +1,17 @@
+package service
+
+import "github.com/saichler/l8types/go/ifs"
+
+type DeviceInventoryService struct {
+}
+
+func (this *DeviceInventoryService) Activate(serviceName string, serviceArea byte,r ifs.IResources,l ifs.IServiceCacheListener, args ...interface{}) error {}
+func (this *DeviceInventoryService) DeActivate() error {}
+func (this *DeviceInventoryService) Post(elems ifs.IElements, vnic ifs.IVNic) ifs.IElements {}
+func (this *DeviceInventoryService) Put(elems ifs.IElements, nic ifs.IVNic) ifs.IElements {}
+func (this *DeviceInventoryService) Patch(elems ifs.IElements, nic ifs.IVNic) ifs.IElements {}
+func (this *DeviceInventoryService) Delete(elems ifs.IElements, nic ifs.IVNic) ifs.IElements {}
+func (this *DeviceInventoryService) Get(elems ifs.IElements, nic ifs.IVNic) ifs.IElements {}
+func (this *DeviceInventoryService) Failed(elems ifs.IElements, ifs.IVNic,msg *ifs.Message) ifs.IElements{}
+func (this *DeviceInventoryService) TransactionConfig() ifs.ITransactionConfig{}
+func (this *DeviceInventoryService) WebService() ifs.IWebService {}
