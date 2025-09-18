@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netop-device-inv
+  labels:
+    name: netop-device-inv
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet 
+metadata:
+  namespace: netop-device-inv
+  name: netop-device-inv
+  labels:
+    app: netop-device-inv
+spec:
+  serviceName: netop-device-inv
+  replicas: 3
+  selector:
+    matchLabels:
+      app: netop-device-inv
+  template:
+    metadata:
+      labels:
+        app: netop-device-inv
+    spec:
+      containers:
+        - name: netop-device-inv
+          image: saichler/probler-inv-box:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

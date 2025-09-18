@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netop-vnet
+  labels:
+    name: netop-vnet
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: netop-vnet
+  name: netop-vnet
+  labels:
+    app: netop-vnet
+spec:
+  selector:
+    matchLabels:
+      app: netop-vnet
+  template:
+    metadata:
+      labels:
+        app: netop-vnet
+    spec:
+      hostNetwork: true
+      containers:
+        - name: netop-vnet
+          image: saichler/netop-vnet:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 29988

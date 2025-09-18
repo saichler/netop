@@ -4,11 +4,11 @@ import (
 	"os"
 
 	"github.com/saichler/l8inventory/go/inv/service"
-	"github.com/saichler/l8pollaris/go/types"
+	"github.com/saichler/l8pollaris/go/types/l8poll"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/layer8/go/overlay/vnic"
 	"github.com/saichler/netop/go/common"
-	types3 "github.com/saichler/netop/go/types"
+	netosTypes "github.com/saichler/netop/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
 )
 
@@ -23,14 +23,14 @@ func main() {
 
 	res.Logger().Info("Registering box service")
 	//Add the inventory model and mark the Id field as key
-	inventoryNode, _ := nic.Resources().Introspector().Inspect(&types3.Device{})
+	inventoryNode, _ := nic.Resources().Introspector().Inspect(&netosTypes.Device{})
 	introspecting.AddPrimaryKeyDecorator(inventoryNode, "Id")
-	nic.Resources().Registry().Register(&types3.DeviceList{})
+	nic.Resources().Registry().Register(&netosTypes.DeviceList{})
 
 	//Activate the box inventory service with the primary key & sample model instance
 	res.Services().RegisterServiceHandlerType(&inventory.InventoryService{})
 	_, err := nic.Resources().Services().Activate(inventory.ServiceType, common.INVENTORY_SERVICE_BOX, common.INVENTORY_AREA_BOX,
-		nic.Resources(), nic, "Id", &types3.Device{}, &types.DeviceServiceInfo{ServiceName: common.ORM_SERVICE, ServiceArea: 0})
+		nic.Resources(), nic, "Id", &netosTypes.Device{}, &l8poll.L8ServiceInfo{ServiceName: common.ORM_SERVICE, ServiceArea: 0})
 
 	invCenter := inventory.Inventory(res, common.INVENTORY_SERVICE_BOX, common.INVENTORY_AREA_BOX)
 	invCenter.AddStats("Total", Total)
@@ -41,7 +41,7 @@ func main() {
 	}
 
 	res.Logger().SetLogLevel(ifs.Error_Level)
-	WaitForSignal(nic.Resources())
+	common.WaitForSignal(nic.Resources())
 }
 
 func Total(any interface{}) bool {

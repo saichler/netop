@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: netop-webui
+  labels:
+    name: netop-webui
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: netop-webui
+  name: netop-webui
+  labels:
+    app: netop-webui
+spec:
+  selector:
+    matchLabels:
+      app: netop-webui
+  template:
+    metadata:
+      labels:
+        app: netop-webui
+    spec:
+      hostNetwork: true
+      containers:
+        - name: netop-webui
+          image: saichler/netop-webui:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - name: hdata
+              mountPath: /data
+      volumes:
+        - name: hdata
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate
