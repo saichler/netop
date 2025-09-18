@@ -16,7 +16,7 @@ import (
 func main() {
 	resources := common.CreateResources("web-service" + os.Getenv("HOSTNAME"))
 	resources.Logger().SetLogLevel(ifs.Info_Level)
-	startWebServer(443, "/data/netop")
+	startWebServer(8443, "/data/netop")
 }
 
 func startWebServer(port int, cert string) {
