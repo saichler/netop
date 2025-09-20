@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: netop-device-inv
-          image: saichler/probler-inv-box:latest
+          image: saichler/netop-device-inv:latest
           imagePullPolicy: Always
           env:
             - name: NODE_IP

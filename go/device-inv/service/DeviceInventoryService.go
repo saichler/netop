@@ -24,6 +24,7 @@ type DeviceInventoryService struct {
 func (this *DeviceInventoryService) Activate(serviceName string, serviceArea byte, r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.Device{})
 	r.Registry().Register(&types.DeviceList{})
+	r.Registry().Register(&l8api.L8Query{})
 	node, _ := r.Introspector().Inspect(&types.Device{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
 	devices := GetMockDevices()
