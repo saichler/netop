@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/layer8/go/overlay/vnic"
+	"github.com/saichler/l8bus/go/overlay/vnic"
 	"github.com/saichler/netop/go/common"
 	"github.com/saichler/netop/go/device-inv/service"
 )

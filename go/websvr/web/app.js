@@ -236,11 +236,135 @@ function initializeDeviceManagement() {
     populateDeviceTable();
 }
 
-function populateDeviceTable() {
+async function populateDeviceTable() {
     const deviceTableBody = document.getElementById('deviceTableBody');
     if (!deviceTableBody) return;
 
-    const devices = [
+    let devices = [];
+
+    try {
+        // Try to fetch from REST API first
+        const queryParams = new URLSearchParams({
+            body: JSON.stringify({
+                text: "select * from Device",
+                rootType: "device",
+                properties: ["*"],
+                matchCase: true
+            })
+        });
+
+        const response = await fetch(`/netop/0/dev-inv?${queryParams}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data.list && Array.isArray(data.list)) {
+                // Transform API response to match UI format
+                devices = data.list.map(device => ({
+                    id: device.id,
+                    name: device.name,
+                    type: mapDeviceType(device.type),
+                    ip: device.ipAddress,
+                    location: device.location,
+                    status: mapDeviceStatus(device.status),
+                    uptime: device.uptime,
+                    model: device.model,
+                    serial: device.serialNumber,
+                    firmware: device.firmwareVersion,
+                    mac: device.macAddress,
+                    subnet: device.subnetMask,
+                    gateway: device.gateway,
+                    vlan: device.vlan
+                }));
+            } else {
+                throw new Error('Invalid API response format');
+            }
+        } else {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+    } catch (error) {
+        console.warn('Failed to fetch devices from API, falling back to mock data:', error);
+        // Fallback to mock data
+        devices = getMockDevices();
+    }
+
+    // Clear existing rows
+    deviceTableBody.innerHTML = '';
+
+    // Populate table with devices
+    devices.forEach(device => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-device', JSON.stringify(device));
+        row.style.cursor = 'pointer';
+
+        row.innerHTML = `
+            <td>${device.id}</td>
+            <td>${device.name}</td>
+            <td><span class="device-type">${device.type}</span></td>
+            <td>${device.ip}</td>
+            <td>${device.location}</td>
+            <td><span class="status-badge ${device.status === 'online' ? 'online' : device.status === 'maintenance' ? 'warning' : 'offline'}">${device.status.charAt(0).toUpperCase() + device.status.slice(1)}</span></td>
+            <td>${device.uptime}</td>
+            <td class="action-buttons">
+                <button class="btn-icon" title="Configure"><i class="fas fa-cog"></i></button>
+                <button class="btn-icon" title="Monitor"><i class="fas fa-chart-line"></i></button>
+                <button class="btn-icon" title="Reboot"><i class="fas fa-redo"></i></button>
+            </td>
+        `;
+
+        // Add click handler to the row
+        row.addEventListener('click', function(e) {
+            // Don't open modal if clicking on action buttons
+            if (!e.target.closest('.action-buttons')) {
+                openDeviceModal(device);
+            }
+        });
+
+        // Add click handlers to action buttons
+        const buttons = row.querySelectorAll('.btn-icon');
+        buttons[0].addEventListener('click', function(e) {
+            e.stopPropagation();
+            configureDevice(device.id);
+        });
+        buttons[1].addEventListener('click', function(e) {
+            e.stopPropagation();
+            monitorDevice(device.id);
+        });
+        buttons[2].addEventListener('click', function(e) {
+            e.stopPropagation();
+            rebootDevice(device.id);
+        });
+
+        deviceTableBody.appendChild(row);
+    });
+}
+
+function mapDeviceType(apiType) {
+    const typeMap = {
+        'DEVICE_TYPE_SWITCH': 'Switch',
+        'DEVICE_TYPE_ROUTER': 'Router',
+        'DEVICE_TYPE_FIREWALL': 'Firewall',
+        'DEVICE_TYPE_ACCESS_POINT': 'Access Point'
+    };
+    return typeMap[apiType] || apiType;
+}
+
+function mapDeviceStatus(apiStatus) {
+    const statusMap = {
+        'DEVICE_STATUS_ONLINE': 'online',
+        'DEVICE_STATUS_OFFLINE': 'offline',
+        'DEVICE_STATUS_WARNING': 'warning',
+        'DEVICE_STATUS_MAINTENANCE': 'maintenance'
+    };
+    return statusMap[apiStatus] || 'offline';
+}
+
+function getMockDevices() {
+    return [
         {
             id: 'SW-001',
             name: 'Core Switch A',
@@ -370,52 +494,6 @@ function populateDeviceTable() {
             vlan: '30'
         }
     ];
-
-    devices.forEach(device => {
-        const row = document.createElement('tr');
-        row.setAttribute('data-device', JSON.stringify(device));
-        row.style.cursor = 'pointer';
-
-        row.innerHTML = `
-            <td>${device.id}</td>
-            <td>${device.name}</td>
-            <td><span class="device-type">${device.type}</span></td>
-            <td>${device.ip}</td>
-            <td>${device.location}</td>
-            <td><span class="status-badge ${device.status === 'online' ? 'online' : device.status === 'maintenance' ? 'warning' : 'offline'}">${device.status.charAt(0).toUpperCase() + device.status.slice(1)}</span></td>
-            <td>${device.uptime}</td>
-            <td class="action-buttons">
-                <button class="btn-icon" title="Configure"><i class="fas fa-cog"></i></button>
-                <button class="btn-icon" title="Monitor"><i class="fas fa-chart-line"></i></button>
-                <button class="btn-icon" title="Reboot"><i class="fas fa-redo"></i></button>
-            </td>
-        `;
-
-        // Add click handler to the row
-        row.addEventListener('click', function(e) {
-            // Don't open modal if clicking on action buttons
-            if (!e.target.closest('.action-buttons')) {
-                openDeviceModal(device);
-            }
-        });
-
-        // Add click handlers to action buttons
-        const buttons = row.querySelectorAll('.btn-icon');
-        buttons[0].addEventListener('click', function(e) {
-            e.stopPropagation();
-            configureDevice(device.id);
-        });
-        buttons[1].addEventListener('click', function(e) {
-            e.stopPropagation();
-            monitorDevice(device.id);
-        });
-        buttons[2].addEventListener('click', function(e) {
-            e.stopPropagation();
-            rebootDevice(device.id);
-        });
-
-        deviceTableBody.appendChild(row);
-    });
 }
 
 function initializeTopology() {

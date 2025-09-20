@@ -6,13 +6,13 @@ import (
 	"syscall"
 
 	"github.com/saichler/l8collector/go/collector/common"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/manager"
 	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8types/go/types/l8sysconfig"
 	"github.com/saichler/l8utils/go/utils/logger"
 	"github.com/saichler/l8utils/go/utils/registry"
 	"github.com/saichler/l8utils/go/utils/resources"
-	"github.com/saichler/reflect/go/reflect/introspecting"
 )
 
 const (
@@ -26,7 +26,7 @@ const (
 	INVENTORY_AREA_BOX    = 0
 	INVENTORY_SERVICE_K8S = "K8sClr"
 	INVENTORY_AREA_K8S    = 1
-	PREFIX                = "/probler/"
+	PREFIX                = "/netop/"
 )
 
 func CreateResources(alias string) ifs.IResources {

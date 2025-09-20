@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
 	"github.com/saichler/l8services/go/services/dcache"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
@@ -8,7 +9,6 @@ import (
 	"github.com/saichler/l8types/go/types/l8web"
 	"github.com/saichler/l8utils/go/utils/web"
 	"github.com/saichler/netop/go/types"
-	"github.com/saichler/reflect/go/reflect/introspecting"
 )
 
 const (
@@ -26,7 +26,12 @@ func (this *DeviceInventoryService) Activate(serviceName string, serviceArea byt
 	r.Registry().Register(&types.DeviceList{})
 	node, _ := r.Introspector().Inspect(&types.Device{})
 	introspecting.AddPrimaryKeyDecorator(node, "Id")
-	this.cache = dcache.NewDistributedCache(serviceName, serviceArea, &types.Device{}, nil, l, r)
+	devices := GetMockDevices()
+	deviceList := make([]interface{}, len(devices))
+	for i, v := range devices {
+		deviceList[i] = v
+	}
+	this.cache = dcache.NewDistributedCache(serviceName, serviceArea, &types.Device{}, deviceList, l, r)
 	return nil
 }
 
