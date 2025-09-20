@@ -227,9 +227,14 @@
             <div id="devices" class="page">
                 <div class="page-header">
                     <h2>Device Management</h2>
-                    <button class="btn-primary" onclick="addDevice()">
-                        <i class="fas fa-plus"></i> Add Device
-                    </button>
+                    <div>
+                        <button class="btn-primary" onclick="refreshDevices()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn-primary" onclick="addDevice()">
+                            <i class="fas fa-plus"></i> Add Device
+                        </button>
+                    </div>
                 </div>
 
                 <div class="filters">

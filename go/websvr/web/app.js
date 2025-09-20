@@ -233,13 +233,16 @@ function initializeDeviceManagement() {
         deviceTableBody.innerHTML = '';
     }
 
-    populateDeviceTable();
+    populateDeviceTable().catch(error => {
+        console.error('Error in populateDeviceTable:', error);
+    });
 }
 
 async function populateDeviceTable() {
     const deviceTableBody = document.getElementById('deviceTableBody');
     if (!deviceTableBody) return;
 
+    console.log('populateDeviceTable() called - attempting to fetch from API');
     let devices = [];
 
     try {
@@ -253,16 +256,24 @@ async function populateDeviceTable() {
             })
         });
 
-        const response = await fetch(`/netop/0/dev-inv?${queryParams}`, {
+        const apiUrl = `/netop/0/dev-inv?${queryParams}`;
+        console.log('Making API call to:', apiUrl);
+
+        const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             }
         });
 
+        console.log('API response status:', response.status);
+        console.log('API response ok:', response.ok);
+
         if (response.ok) {
             const data = await response.json();
+            console.log('API response data:', data);
             if (data && data.list && Array.isArray(data.list)) {
+                console.log('Successfully received device list from API, count:', data.list.length);
                 // Transform API response to match UI format
                 devices = data.list.map(device => ({
                     id: device.id,
@@ -284,7 +295,9 @@ async function populateDeviceTable() {
                 throw new Error('Invalid API response format');
             }
         } else {
-            throw new Error(`API request failed with status ${response.status}`);
+            const errorText = await response.text();
+            console.log('API error response:', errorText);
+            throw new Error(`API request failed with status ${response.status}: ${errorText}`);
         }
     } catch (error) {
         console.warn('Failed to fetch devices from API, falling back to mock data:', error);
@@ -627,6 +640,15 @@ function refreshDashboard() {
 
 function addDevice() {
     showNotification('Device configuration dialog would open here');
+}
+
+function refreshDevices() {
+    console.log('Manual refresh triggered');
+    showNotification('Refreshing device list...');
+    populateDeviceTable().catch(error => {
+        console.error('Error refreshing devices:', error);
+        showNotification('Failed to refresh device list');
+    });
 }
 
 function zoomIn() {

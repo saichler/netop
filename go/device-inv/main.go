@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8types/go/ifs"
 	"github.com/saichler/netop/go/common"
 	"github.com/saichler/netop/go/device-inv/service"
 )
@@ -32,5 +32,6 @@ func main() {
 
 	res.Services().RegisterServiceHandlerType(&service.DeviceInventoryService{})
 	nic.Resources().Services().Activate(service.ServiceType, service.ServiceName, service.ServiceArea, nic.Resources(), nic)
+	
 	common.WaitForSignal(nic.Resources())
 }

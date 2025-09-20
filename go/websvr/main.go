@@ -3,14 +3,16 @@ package main
 import (
 	"os"
 
-	"github.com/saichler/l8types/go/ifs"
-	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/l8bus/go/overlay/health"
 	"github.com/saichler/l8bus/go/overlay/protocol"
 	"github.com/saichler/l8bus/go/overlay/vnic"
+	"github.com/saichler/l8reflect/go/reflect/introspecting"
+	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8types/go/types/l8api"
+	"github.com/saichler/l8types/go/types/l8health"
+	"github.com/saichler/l8web/go/web/server"
 	"github.com/saichler/netop/go/common"
 	"github.com/saichler/netop/go/types"
-	"github.com/saichler/l8reflect/go/reflect/introspecting"
 )
 
 func main() {
@@ -44,7 +46,8 @@ func startWebServer(port int, cert string) {
 
 	nic.Resources().Registry().Register(&types.Device{})
 	nic.Resources().Registry().Register(&types.DeviceList{})
-
+	nic.Resources().Registry().Register(&l8health.L8Top{})
+	nic.Resources().Registry().Register(&l8api.L8Query{})
 	/*
 		nic.Resources().Registry().Register(&types4.Pollaris{})
 		nic.Resources().Registry().Register(&types4.Device{})
